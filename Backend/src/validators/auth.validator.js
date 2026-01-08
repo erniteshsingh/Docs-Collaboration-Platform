@@ -1,6 +1,6 @@
 import { body } from "express-validator";
 
- export const registerValidator = [
+export const registerValidator = [
   body("username")
     .trim()
     .notEmpty()
@@ -29,26 +29,28 @@ import { body } from "express-validator";
     .notEmpty()
     .withMessage("Password is required")
     .isStrongPassword({
-      minLength: 8,
+      minLength: 6,
       minLowercase: 1,
       minUppercase: 1,
       minNumbers: 1,
       minSymbols: 1,
     })
     .withMessage(
-      "Password must be at least 8 characters and include uppercase, lowercase, number and symbol"
+      "Password must be at least 6 characters and include uppercase, lowercase, number and symbol"
     ),
 ];
 
 export const loginValidator = [
-    body("email")
-      .trim()
-      .notEmpty().withMessage("Email is required")
-      .isEmail().withMessage("Invalid email format"),
-  
-    body("password")
-      .notEmpty().withMessage("Password is required")
-      .isLength({ min: 6 }).withMessage("Password must be at least 6 characters"),
-  ];
+  body("email")
+    .trim()
+    .notEmpty()
+    .withMessage("Email is required")
+    .isEmail()
+    .withMessage("Invalid email format"),
 
-
+  body("password")
+    .notEmpty()
+    .withMessage("Password is required")
+    .isLength({ min: 6 })
+    .withMessage("Password must be at least 6 characters"),
+];
