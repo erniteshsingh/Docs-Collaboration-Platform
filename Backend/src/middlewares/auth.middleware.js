@@ -2,23 +2,20 @@ import jwt from "jsonwebtoken";
 
 export const authMiddleware = (req, res, next) => {
   try {
-    // 1️⃣ Read Authorization header
-    const authHeader = req.headers.authorization;
+    // 1️⃣ Read token from cookies
+    const token = req.cookies?.accessToken;
 
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    if (!token) {
       return res.status(401).json({
         success: false,
-        message: "Unauthorized: No token provided",
+        message: "Unauthorized: Token missing",
       });
     }
 
-    // 2️⃣ Extract token
-    const token = authHeader.split(" ")[1];
-
-    // 3️⃣ Verify token
+    // 2️⃣ Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // 4️⃣ Attach user identity
+    // 3️⃣ Attach user info to request
     req.user = {
       userId: decoded.userId,
       email: decoded.email,
@@ -32,4 +29,3 @@ export const authMiddleware = (req, res, next) => {
     });
   }
 };
-

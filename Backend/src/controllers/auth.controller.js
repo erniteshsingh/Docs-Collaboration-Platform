@@ -44,7 +44,7 @@ export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // 1️⃣ Basic validation
+    // 1️⃣ Validate input
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -52,7 +52,7 @@ export const loginUser = async (req, res) => {
       });
     }
 
-    // 2️⃣ Find user (email should be indexed)
+    // 2️⃣ Find user
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({
@@ -77,16 +77,21 @@ export const loginUser = async (req, res) => {
         email: user.email,
       },
       process.env.JWT_SECRET,
-      {
-        expiresIn: "7d",
-      }
+      { expiresIn: "7d" }
     );
 
-    // 5️⃣ Success response
+    // 5️⃣ SET COOKIE  🔥 IMPORTANT
+    res.cookie("accessToken", token, {
+      httpOnly: true,
+      secure: false, // localhost
+      sameSite: "lax", // Postman friendly
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    // 6️⃣ Response (no token exposure)
     return res.status(200).json({
       success: true,
       message: "Login successful",
-      token,
       user: {
         id: user._id,
         username: user.username,
@@ -100,4 +105,15 @@ export const loginUser = async (req, res) => {
       message: "Server error",
     });
   }
+}
+
+export const logoutUser = (req, res) => {
+  res.clearCookie("accessToken", {
+    httpOnly: true,
+    sameSite: "strict",
+  });
+  return res.status(200).json({
+    success: true,
+    message: "Logged out successfully",
+  });
 };
