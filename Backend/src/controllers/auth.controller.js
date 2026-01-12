@@ -44,7 +44,6 @@ export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // 1️⃣ Validate input
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -52,7 +51,6 @@ export const loginUser = async (req, res) => {
       });
     }
 
-    // 2️⃣ Find user
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({
@@ -61,7 +59,6 @@ export const loginUser = async (req, res) => {
       });
     }
 
-    // 3️⃣ Compare password
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch) {
       return res.status(401).json({
@@ -70,25 +67,40 @@ export const loginUser = async (req, res) => {
       });
     }
 
-    // 4️⃣ Generate JWT
     const token = jwt.sign(
       {
         userId: user._id,
         email: user.email,
       },
       process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    const refreshToken = jwt.sign(
+      { userId: user._id },
+      process.env.JWT_REFRESH_SECRET,
       { expiresIn: "7d" }
     );
 
-    // 5️⃣ SET COOKIE  🔥 IMPORTANT
+    user.refreshToken = refreshToken;
+    await user.save();
+
+    
+
     res.cookie("accessToken", token, {
       httpOnly: true,
-      secure: false, // localhost
-      sameSite: "lax", // Postman friendly
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "none",
+      maxAge: 1 * 24 * 60 * 60 * 1000,
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      sameSite: "none",
+      secure: process.env.NODE_ENV === "production",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    // 6️⃣ Response (no token exposure)
     return res.status(200).json({
       success: true,
       message: "Login successful",
@@ -105,15 +117,56 @@ export const loginUser = async (req, res) => {
       message: "Server error",
     });
   }
-}
+};
 
 export const logoutUser = (req, res) => {
   res.clearCookie("accessToken", {
     httpOnly: true,
     sameSite: "strict",
   });
+
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: false,
+  });
+
   return res.status(200).json({
     success: true,
     message: "Logged out successfully",
   });
+};
+
+export const refreshAccessToken = (req, res) => {
+  try {
+    const refreshToken = req.cookies.refreshToken;
+
+    if (!refreshToken) {
+      return res.status(401).json({ message: "Refresh token missing" });
+    }
+
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+
+    const newAccessToken = jwt.sign(
+      { userId: decoded.userId },
+      process.env.JWT_SECRET,
+      { expiresIn: "15m" }
+    );
+
+    res.cookie("accessToken", newAccessToken, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: false,
+      maxAge: 15 * 60 * 1000,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Access token refreshed",
+    });
+  } catch (err) {
+    return res.status(401).json({
+      message: "Invalid refresh token",
+    });
+  }
 };

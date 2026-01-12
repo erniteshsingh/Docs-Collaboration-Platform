@@ -21,10 +21,13 @@ const userSchema = new mongoose.Schema(
       unique: true,
       minlength: 6,
     },
+    refreshToken: {
+      type: String,
+      default: null,
+    },
   },
   { timestamps: true }
 );
-
 
 const User = mongoose.model("User", userSchema);
 export default User;
