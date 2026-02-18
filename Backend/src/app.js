@@ -15,5 +15,9 @@ import userRoutes from "./routes/user.routes.js";
 app.use("/api/v1/users",userRoutes)
 
 
+import documentRoutes from "./routes/document.routes.js";
+app.use("/api/v1/documents", documentRoutes);
+
+
 
 export default app;

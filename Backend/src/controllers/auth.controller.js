@@ -73,19 +73,18 @@ export const loginUser = async (req, res) => {
         email: user.email,
       },
       process.env.JWT_SECRET,
-      { expiresIn: "1d" }
+      { expiresIn: "1d" },
     );
+
 
     const refreshToken = jwt.sign(
       { userId: user._id },
       process.env.JWT_REFRESH_SECRET,
-      { expiresIn: "7d" }
+      { expiresIn: "7d" },
     );
 
     user.refreshToken = refreshToken;
     await user.save();
-
-    
 
     res.cookie("accessToken", token, {
       httpOnly: true,
@@ -94,6 +93,7 @@ export const loginUser = async (req, res) => {
       maxAge: 1 * 24 * 60 * 60 * 1000,
     });
 
+    
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       sameSite: "none",
@@ -150,7 +150,7 @@ export const refreshAccessToken = (req, res) => {
     const newAccessToken = jwt.sign(
       { userId: decoded.userId },
       process.env.JWT_SECRET,
-      { expiresIn: "15m" }
+      { expiresIn: "15m" },
     );
 
     res.cookie("accessToken", newAccessToken, {
