@@ -19,5 +19,9 @@ import documentRoutes from "./routes/document.routes.js";
 app.use("/api/v1/documents", documentRoutes);
 
 
+import collaboratorRoutes from "./routes/collaborators.routes.js";
+app.use("/api/v1/collaborators", collaboratorRoutes);
+
+
 
 export default app;

@@ -76,7 +76,6 @@ export const loginUser = async (req, res) => {
       { expiresIn: "1d" },
     );
 
-
     const refreshToken = jwt.sign(
       { userId: user._id },
       process.env.JWT_REFRESH_SECRET,
@@ -93,7 +92,6 @@ export const loginUser = async (req, res) => {
       maxAge: 1 * 24 * 60 * 60 * 1000,
     });
 
-    
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       sameSite: "none",
