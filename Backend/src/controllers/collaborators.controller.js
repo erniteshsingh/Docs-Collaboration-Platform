@@ -42,6 +42,8 @@ export const addCollaborators = async (req, res) => {
       return res.status(404).json({ message: "Document not found" });
     }
 
+    console.log("Document Owner ID:", document.owner.toString());
+
     if (document.owner.toString() !== ownerId) {
       return res
         .status(403)

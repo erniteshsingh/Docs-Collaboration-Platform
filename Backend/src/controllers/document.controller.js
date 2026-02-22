@@ -52,23 +52,7 @@ export const getAllDocuments = async (req, res) => {
 
 export const getSingleDocument = async (req, res) => {
   try {
-    const { id } = req.params;
-    const userId = req.user.userId;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ message: "Invalid document ID" });
-    }
-
-    const document = await Document.findById(id);
-
-    if (!document) {
-      return res.status(404).json({ message: "Document not found" });
-    }
-
-    if (document.owner.toString() !== userId) {
-      return res.status(403).json({ message: "Access denied" });
-    }
-
+    const document = req.document;
     res.status(200).json({
       success: true,
       document,
@@ -78,44 +62,16 @@ export const getSingleDocument = async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 };
-
 export const updateDocument = async (req, res) => {
   try {
-    const id = req.params.id;
-    const userId = req.user.userId;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ message: "Invalid document ID" });
-    }
-
-    const document = await Document.findById(id);
-
-    if (!document) {
-      return res.status(404).json({
-        message: "Document not found",
-      });
-    }
-
-    if (document.owner.toString() !== userId) {
-      return res.status(403).json({
-        message: "Access Denied",
-      });
-    }
-
+    const document = req.document; // DB already hit in middleware
     const { title, content } = req.body;
 
-    if (title === undefined && content === undefined) {
-      return res.status(400).json({
-        message: "Nothing to update",
-      });
-    }
+    if (!title && !content)
+      return res.status(400).json({ message: "Nothing to update" });
 
-    if (title !== undefined) {
-      document.title = title;
-    }
-    if (content !== undefined) {
-      document.content = content;
-    }
+    if (title) document.title = title;
+    if (content) document.content = content;
 
     await document.save();
 
@@ -132,31 +88,13 @@ export const updateDocument = async (req, res) => {
 
 export const deleteDocument = async (req, res) => {
   try {
-    const id = req.params.id;
-    const userId = req.user.userId;
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ message: "Invalid document ID" });
-    }
-
-    const document = await Document.findById(id);
-
-    if (!document) {
-      return res.status(404).json({ message: "Document not found" });
-    }
-
-    if (document.owner.toString() !== userId) {
-      return res.status(403).json({ message: "Access denied" });
-    }
+    const document = req.document;
 
     await document.deleteOne();
 
-    res.status(200).json({
-      message: "Document deleted successfully",
-    });
+    res.status(200).json({ message: "Document deleted successfully" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({
-      message: "Server error",
-    });
+    res.status(500).json({ message: "Server error" });
   }
 };

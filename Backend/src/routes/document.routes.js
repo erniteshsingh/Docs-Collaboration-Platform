@@ -6,19 +6,35 @@ import {
   getAllDocuments,
   getSingleDocument,
   updateDocument,
-  deleteDocument
+  deleteDocument,
 } from "../controllers/document.controller.js";
 
 import { authMiddleware } from "../middlewares/auth.middleware.js";
+import { checkDocumentPermission } from "../middlewares/checkDocumentationPermission.js";
 
 router.post("/", authMiddleware, createDocument);
 
 router.get("/", authMiddleware, getAllDocuments);
 
-router.get("/:id", authMiddleware, getSingleDocument);
+router.get(
+  "/:id",
+  authMiddleware,
+  checkDocumentPermission("viewer"),
+  getSingleDocument,
+);
 
-router.patch("/:id",authMiddleware,updateDocument)
+router.patch(
+  "/:id",
+  authMiddleware,
+  checkDocumentPermission("editor"),
+  updateDocument,
+);
 
-router.delete("/:id",authMiddleware,deleteDocument)
+router.delete(
+  "/:id",
+  authMiddleware,
+  checkDocumentPermission("owner"),
+  deleteDocument,
+);
 
 export default router;
