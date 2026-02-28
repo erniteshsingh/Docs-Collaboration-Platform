@@ -6,6 +6,7 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [userProfile, setUserProfile] = useState();
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -18,6 +19,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (formData) => {
+    console.log("Entred inside Login");
     const res = await axios.post(
       "http://localhost:5000/api/v1/auth/login",
       formData,
@@ -38,16 +40,9 @@ export const AuthProvider = ({ children }) => {
       "http://localhost:5000/api/v1/auth/register",
       formData,
     );
-
-    console.log("Registration response:", res.data);
     const { token, user } = res.data;
-
-    console.log("Received token:", token);
-    console.log("Received user:", user);
-
     localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(user));
-
     setUser(user);
   };
 
@@ -57,12 +52,29 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  const profile = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await axios.get("http://localhost:5000/api/v1/users/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setUserProfile(res.data);
+    } catch (err) {
+      console.error("Profile fetch failed", err);
+    }
+  };
   const value = {
     user,
+    userProfile,
     loading,
     login,
     register,
     logout,
+    profile,
     isAuthenticated: !!user,
   };
 

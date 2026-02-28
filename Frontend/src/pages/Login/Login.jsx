@@ -1,78 +1,93 @@
 import { useState } from "react";
-
 import { useAuth } from "../../context/AuthContext";
 import "./Login.css";
+import { RxCross2 } from "react-icons/rx";
+import { toast } from "react-toastify";
 
-const Login = () => {
+const Login = ({ isOpen, onClose, openRegister }) => {
   const { login } = useAuth();
 
-  const [form, setForm] = useState({
+  const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+
+  if (!isOpen) return null;
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-    setError("");
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
   };
-
   const handleSubmit = async (e) => {
-    console.log("Submitting login form with data:", form);
     e.preventDefault();
+    setLoading(true);
 
     try {
-      setLoading(true);
+      await login(formData);
 
-      await login(form);
+      toast.success("You are login successfully ");
+
+      setFormData({
+        username: "",
+        email: "",
+        password: "",
+      });
+      onClose();
     } catch (err) {
-      setError(
-        err.response?.data?.message || "Login failed. Please try again.",
-      );
+      const message = err?.response?.data?.message || "Login failed";
+      toast.error(message);
     } finally {
       setLoading(false);
     }
   };
-
   return (
-    <div className="login-container">
-      <div className="login-card">
-        <h2 className="login-title">Welcome Back!</h2>
-        <p className="login-subtitle">Login to your account</p>
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="login-card" onClick={(e) => e.stopPropagation()}>
+        <button className="modal-close" onClick={onClose}>
+          <RxCross2 />
+        </button>
 
-        {error && <p className="login-error">{error}</p>}
+        <h2>Login</h2>
 
-        <form onSubmit={handleSubmit} className="login-form">
-          <div className="form-group">
+        <form onSubmit={handleSubmit}>
+          <div className="input-group">
             <label>Email</label>
             <input
               type="email"
               name="email"
-              placeholder="Enter your email"
-              value={form.email}
+              placeholder="Enter email"
+              value={formData.email}
               onChange={handleChange}
               required
             />
           </div>
 
-          <div className="form-group">
+          <div className="input-group">
             <label>Password</label>
             <input
               type="password"
               name="password"
-              placeholder="Enter your password"
-              value={form.password}
+              placeholder="Enter password"
+              value={formData.password}
               onChange={handleChange}
               required
             />
           </div>
 
-          <button className="login-btn" disabled={loading}>
+          <button type="submit" disabled={loading}>
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
+
+        <p className="redirect-text">
+          Don't have an account?{" "}
+          <span className="link-btn" onClick={openRegister}>
+            Register
+          </span>
+        </p>
       </div>
     </div>
   );

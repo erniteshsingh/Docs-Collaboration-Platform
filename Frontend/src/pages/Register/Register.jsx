@@ -1,9 +1,10 @@
 import { useState } from "react";
+import { toast } from "react-toastify";
+import { RxCross2 } from "react-icons/rx";
 import { useAuth } from "../../context/AuthContext";
-import { Link } from "react-router-dom";
 import "./Register.css";
 
-const Register = () => {
+const Register = ({ isOpen, onClose, openLogin }) => {
   const { register } = useAuth();
 
   const [formData, setFormData] = useState({
@@ -13,22 +14,21 @@ const Register = () => {
   });
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+
+  if (!isOpen) return null;
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    });
-    setError("");
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
-      setLoading(true);
-
       await register(formData);
 
       setFormData({
@@ -36,55 +36,84 @@ const Register = () => {
         email: "",
         password: "",
       });
+
+      onClose();
     } catch (err) {
-      setError(err.response?.data?.message || "Registration failed");
+      const message = err?.response?.data?.message || "Registration failed";
+      toast.error(message);
     } finally {
       setLoading(false);
     }
   };
 
+  const handleOverlayClick = (e) => {
+    if (e.target.classList.contains("register-overlay")) {
+      onClose();
+    }
+  };
+
+  const handleLoginClick = () => {
+    onClose();
+    openLogin && openLogin();
+  };
+
   return (
-    <div className="auth-container">
-      <form className="auth-card" onSubmit={handleSubmit}>
-        <h2>Create Account</h2>
-
-        {error && <p className="auth-error">{error}</p>}
-
-        <input
-          type="text"
-          name="username"
-          placeholder="Enter username"
-          value={formData.username}
-          onChange={handleChange}
-          required
-        />
-
-        <input
-          type="email"
-          name="email"
-          placeholder="Enter email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-        />
-
-        <input
-          type="password"
-          name="password"
-          placeholder="Enter password"
-          value={formData.password}
-          onChange={handleChange}
-          required
-        />
-
-        <button type="submit" disabled={loading}>
-          {loading ? "Creating..." : "Register"}
+    <div className="register-overlay" onClick={handleOverlayClick}>
+      <div className="register-card">
+        <button className="close-btn" onClick={onClose}>
+          <RxCross2 />
         </button>
 
+        <h2 className="register-title">Create Account</h2>
+        <p className="register-subtitle">Join DocCollab</p>
+
+        <form onSubmit={handleSubmit} className="register-form">
+          <div className="form-group">
+            <label>Username</label>
+            <input
+              type="text"
+              name="username"
+              placeholder="Enter username"
+              value={formData.username}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Email</label>
+            <input
+              type="email"
+              name="email"
+              placeholder="Enter email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Password</label>
+            <input
+              type="password"
+              name="password"
+              placeholder="Enter password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <button className="register-btn" disabled={loading}>
+            {loading ? "Creating account..." : "Register"}
+          </button>
+        </form>
+
         <p className="auth-switch">
-          {/* Already have an account? <Link to="#">Login</Link> */}
+          Already have an account?
+          <span onClick={handleLoginClick}> Login</span>
         </p>
-      </form>
+      </div>
     </div>
   );
 };

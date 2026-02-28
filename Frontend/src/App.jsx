@@ -1,13 +1,23 @@
 import React from "react";
 
-import Login from "./pages/Login/Login";
-import Register from "./pages/Register/Register";
+import AppRoutes from "./routes/appRoutes";
+import Navbar from "./components/Navbar/Navbar";
+import { ToastContainer, toast } from "react-toastify";
 
 const App = () => {
   return (
     <div>
-      <Register />
-      <Login />
+      <ToastContainer
+        position="top-right"
+        autoClose={2500}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        theme="colored"
+      />
+      <Navbar />
+      <AppRoutes />
     </div>
   );
 };
