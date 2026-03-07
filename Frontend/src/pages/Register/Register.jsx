@@ -26,10 +26,13 @@ const Register = ({ isOpen, onClose, openLogin }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     setLoading(true);
 
     try {
       await register(formData);
+
+      toast.success("Registration successful!");
 
       setFormData({
         username: "",
@@ -39,8 +42,7 @@ const Register = ({ isOpen, onClose, openLogin }) => {
 
       onClose();
     } catch (err) {
-      const message = err?.response?.data?.message || "Registration failed";
-      toast.error(message);
+      toast.error(err.response?.data?.message || "Registration failed");
     } finally {
       setLoading(false);
     }

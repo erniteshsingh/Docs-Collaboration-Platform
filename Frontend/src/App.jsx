@@ -2,11 +2,12 @@ import React from "react";
 
 import AppRoutes from "./routes/appRoutes";
 import Navbar from "./components/Navbar/Navbar";
-import { ToastContainer, toast } from "react-toastify";
+import Footer from "./components/Footer/Footer";
+import { ToastContainer } from "react-toastify";
 
 const App = () => {
   return (
-    <div>
+    <div className="app-layout">
       <ToastContainer
         position="top-right"
         autoClose={2500}
@@ -16,8 +17,14 @@ const App = () => {
         pauseOnHover
         theme="colored"
       />
+
       <Navbar />
-      <AppRoutes />
+
+      <main className="app-content">
+        <AppRoutes />
+      </main>
+
+      <Footer />
     </div>
   );
 };

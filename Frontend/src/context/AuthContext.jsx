@@ -3,36 +3,36 @@ import axios from "axios";
 
 const AuthContext = createContext();
 
+axios.defaults.withCredentials = true;
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [userProfile, setUserProfile] = useState();
+  const [userProfile, setUserProfile] = useState(null);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    const token = localStorage.getItem("token");
 
-    if (storedUser && token) {
+    if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
+
     setLoading(false);
   }, []);
 
   const login = async (formData) => {
-    console.log("Entred inside Login");
     const res = await axios.post(
       "http://localhost:5000/api/v1/auth/login",
       formData,
     );
 
-    console.log("Login response:", res.data);
+    const { user } = res.data;
 
-    const { token, user } = res.data;
-
-    localStorage.setItem("token", token);
     localStorage.setItem("user", JSON.stringify(user));
 
     setUser(user);
+
+    return res.data;
   };
 
   const register = async (formData) => {
@@ -40,40 +40,41 @@ export const AuthProvider = ({ children }) => {
       "http://localhost:5000/api/v1/auth/register",
       formData,
     );
-    const { token, user } = res.data;
-    localStorage.setItem("token", token);
+
+    const { user } = res.data;
+
     localStorage.setItem("user", JSON.stringify(user));
+
     setUser(user);
+
+    return res.data;
   };
 
-  const logout = () => {
-    localStorage.removeItem("token");
+  const logoutUser = async () => {
+    await axios.post("http://localhost:5000/api/v1/auth/logout");
+
     localStorage.removeItem("user");
+
     setUser(null);
   };
 
   const profile = async () => {
     try {
-      const token = localStorage.getItem("token");
-
-      const res = await axios.get("http://localhost:5000/api/v1/users/me", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const res = await axios.get("http://localhost:5000/api/v1/users/me");
 
       setUserProfile(res.data);
     } catch (err) {
       console.error("Profile fetch failed", err);
     }
   };
+
   const value = {
     user,
     userProfile,
     loading,
     login,
     register,
-    logout,
+    logoutUser,
     profile,
     isAuthenticated: !!user,
   };

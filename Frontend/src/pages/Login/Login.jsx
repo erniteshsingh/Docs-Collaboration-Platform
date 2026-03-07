@@ -38,6 +38,7 @@ const Login = ({ isOpen, onClose, openRegister }) => {
       onClose();
     } catch (err) {
       const message = err?.response?.data?.message || "Login failed";
+
       toast.error(message);
     } finally {
       setLoading(false);

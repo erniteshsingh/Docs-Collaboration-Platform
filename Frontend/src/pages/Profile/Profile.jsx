@@ -3,15 +3,15 @@ import { useNavigate } from "react-router-dom";
 import "./Profile.css";
 
 const Profile = () => {
-  const { user, logout } = useAuth();
+  const { user, logoutUser } = useAuth();
   const navigate = useNavigate();
 
   const handleUpdateProfile = () => {
-    navigate("/update-profile"); 
+    navigate("/");
   };
 
   const handleLogout = () => {
-    logout();
+    logoutUser();
     navigate("/login");
   };
 

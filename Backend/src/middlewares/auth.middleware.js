@@ -2,23 +2,20 @@ import jwt from "jsonwebtoken";
 
 export const authMiddleware = (req, res, next) => {
   try {
-   
     const token = req.cookies?.accessToken;
+    console.log(token);
 
     if (!token) {
       return res.status(401).json({
         success: false,
-        message: "Unauthorized: Token missing",
+        message: "Unauthorized: No token provided",
       });
     }
 
-
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    
     req.user = {
       userId: decoded.userId,
-      email: decoded.email,
     };
 
     next();

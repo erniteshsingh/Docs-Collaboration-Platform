@@ -1,6 +1,6 @@
 import { Server } from "socket.io";
-
-// 🔐 SOCKET AUTH MIDDLEWARE
+import Document from "../models/documents.model.js";
+import jwt from "jsonwebtoken";
 
 export const initSocket = (server) => {
   const io = new Server(server, {
@@ -11,60 +11,60 @@ export const initSocket = (server) => {
   io.use((socket, next) => {
     try {
       const token = socket.handshake.auth?.token;
-
-      if (!token) {
-        return next(new Error("Authentication error: No token"));
-      }
+      if (!token) return next(new Error("Unauthorized"));
 
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-      // attach user to socket
-      socket.user = {
-        userId: decoded.userId,
-      };
-
+      socket.userId = decoded.userId; // attach user
       next();
     } catch (err) {
-      next(new Error("Authentication error: Invalid token"));
+      next(new Error("Unauthorized"));
     }
   });
 
   io.on("connection", (socket) => {
-    console.log("User connected:", socket.user.userId);
-
-    // join room
+    // ✅ join room
     socket.on("join-document", (docId) => {
       socket.join(docId);
     });
 
-    socket.on("edit-document", async ({ docId, content }) => {
+    // ⚡ realtime broadcast (no DB write)
+    socket.on("edit-document", ({ docId, content }) => {
+      socket.to(docId).emit("receive-changes", content);
+    });
+
+    // 💾 SAFE DB PERSISTENCE (NEW — IMPORTANT)
+    socket.on("save-document", async ({ docId, content }) => {
       try {
+        if (!docId) return;
+
         const document = await Document.findById(docId);
         if (!document) return;
 
-        const userId = socket.user.userId;
+        const userId = socket.userId;
 
-        if (document.owner.toString() === userId) {
-          socket.to(docId).emit("receive-changes", content);
-          return;
-        }
+        // 🧠 role check
+        const isOwner = document.owner.toString() === userId;
 
         const collaborator = document.collaborators.find(
           (c) => c.user.toString() === userId,
         );
 
-        if (!collaborator || collaborator.role === "viewer") {
+        const canEdit =
+          isOwner || (collaborator && collaborator.role === "editor");
+
+        if (!canEdit) {
+          console.log(" Save blocked: no permission");
           return;
         }
 
-        socket.to(docId).emit("receive-changes", content);
-      } catch (err) {
-        console.error("Socket edit error:", err);
-      }
-    });
+        // ✅ update content
+        document.content = content;
+        await document.save();
 
-    socket.on("disconnect", () => {
-      console.log("User disconnected:", socket.user.userId);
+        console.log("✅ Document saved to DB");
+      } catch (err) {
+        console.error("Save Document Error:", err);
+      }
     });
   });
 };

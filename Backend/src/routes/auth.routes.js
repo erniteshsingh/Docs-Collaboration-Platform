@@ -14,7 +14,7 @@ import {
   registerUser,
   loginUser,
   logoutUser,
-  refreshAccessToken
+  refreshAccessToken,
 } from "../controllers/auth.controller.js";
 
 router.post("/register", registerValidator, validate, registerUser);

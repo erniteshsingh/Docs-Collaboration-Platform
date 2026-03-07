@@ -7,6 +7,7 @@ import {
   getSingleDocument,
   updateDocument,
   deleteDocument,
+  saveDocument,
 } from "../controllers/document.controller.js";
 
 import { authMiddleware } from "../middlewares/auth.middleware.js";
@@ -37,4 +38,5 @@ router.delete(
   deleteDocument,
 );
 
+router.post("/save", authMiddleware, saveDocument);
 export default router;

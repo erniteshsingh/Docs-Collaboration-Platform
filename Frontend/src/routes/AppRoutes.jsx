@@ -3,7 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import Home from "../pages/Home/Home";
 import Login from "../pages/Login/Login";
 import Register from "../pages/Register/Register";
-import Documents from "../pages/Documents/Document";
+import Documents from "../pages/Documents/Documents";
 import Profile from "../pages/Profile/Profile";
 
 const AppRoutes = () => {

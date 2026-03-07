@@ -7,16 +7,18 @@ export const createDocument = async (req, res) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    console.log("owner id from token:", req.user.userId);
-
     const title = req.body.title || "Untitled Document";
     const content = req.body.content || "";
 
+    console.log("owner id from token:", req.user.userId);
+    console.log("Title:", title, "Contenet:", content);
+
     const document = await Document.create({
-      title,
-      content,
+      title: title,
+      content: content,
       owner: req.user.userId,
     });
+    console.log("document created:", document);
 
     res.status(201).json({
       message: "Document created successfully",
@@ -28,7 +30,6 @@ export const createDocument = async (req, res) => {
   }
 };
 
-
 export const getAllDocuments = async (req, res) => {
   try {
     const userId = req.user.userId;
@@ -37,14 +38,14 @@ export const getAllDocuments = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
 
     const skip = (page - 1) * limit;
-   
+
     const documents = await Document.find({
       $or: [{ owner: userId }, { "collaborators.user": userId }],
     })
       .sort({ updatedAt: -1 })
       .skip(skip)
       .limit(limit)
-      .select("title owner updatedAt collaborators");
+      .select("title content owner updatedAt collaborators");
 
     const total = await Document.countDocuments({
       $or: [{ owner: userId }, { "collaborators.user": userId }],
@@ -78,9 +79,10 @@ export const getSingleDocument = async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 };
+
 export const updateDocument = async (req, res) => {
   try {
-    const document = req.document; // DB already hit in middleware
+    const document = req.document;
     const { title, content } = req.body;
 
     if (!title && !content)
@@ -88,6 +90,7 @@ export const updateDocument = async (req, res) => {
 
     if (title) document.title = title;
     if (content) document.content = content;
+    console.log("Content:", content);
 
     await document.save();
 
@@ -112,5 +115,57 @@ export const deleteDocument = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const saveDocument = async (req, res) => {
+  try {
+    const { docId, content } = req.body;
+    const userId = req.user?.userId;
+
+    if (!docId || typeof content !== "string") {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid payload",
+      });
+    }
+    const doc = await Document.findById(docId);
+
+    if (!doc) {
+      return res.status(404).json({
+        success: false,
+        message: "Document not found yhi error hai",
+      });
+    }
+
+    const isOwner = doc.owner.toString() === userId;
+    const isEditor = doc.collaborators.find(
+      (editorId) => editorId.toString() === userId,
+    );
+
+    if (!isOwner && !isEditor) {
+      return res.status(403).json({
+        success: false,
+        message: "You do not have permission to save",
+      });
+    }
+
+    doc.content = content;
+    doc.updatedAt = new Date();
+
+    await doc.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Document saved successfully",
+      updatedAt: doc.updatedAt,
+    });
+  } catch (error) {
+    console.error("SAVE_DOCUMENT_ERROR:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
   }
 };
