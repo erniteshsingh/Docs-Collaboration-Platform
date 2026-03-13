@@ -5,7 +5,8 @@ import Login from "../pages/Login/Login";
 import Register from "../pages/Register/Register";
 import Documents from "../pages/Documents/Documents";
 import Profile from "../pages/Profile/Profile";
-
+import Editor from "../pages/Editor/Editor";
+import CreateDocument from "../pages/Documents/CreateDocument";
 const AppRoutes = () => {
   return (
     <Routes>
@@ -14,6 +15,8 @@ const AppRoutes = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/profile" element={<Profile />} />
+      <Route path="/documents/:id" element={<Editor />} />
+      <Route path="/documents/create" element={<CreateDocument />} />
     </Routes>
   );
 };

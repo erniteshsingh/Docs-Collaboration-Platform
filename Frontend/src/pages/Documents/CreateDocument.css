@@ -1,0 +1,130 @@
+.create-doc-page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f5f7fb;
+    padding: 20px;
+  }
+  
+  .create-doc-container {
+    width: 100%;
+    max-width: 750px;
+    background: #ffffff;
+    padding: 32px;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+  }
+  
+  .create-doc-container h2 {
+    font-size: 24px;
+    margin-bottom: 24px;
+    color: #222;
+    font-weight: 600;
+  }
+  
+  .create-doc-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  
+  .create-doc-form input {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    outline: none;
+    transition: border 0.2s;
+  }
+  
+  .create-doc-form input:focus {
+    border-color: #2563eb;
+  }
+  
+  .create-doc-form textarea {
+    width: 100%;
+    min-height: 260px;
+    padding: 14px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    resize: vertical;
+    outline: none;
+    line-height: 1.6;
+    transition: border 0.2s;
+  }
+  
+  .create-doc-form textarea:focus {
+    border-color: #2563eb;
+  }
+  
+  .create-doc-form button {
+    padding: 14px;
+    background: #2563eb;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  
+  .create-doc-form button:hover {
+    background: #1e4ed8;
+  }
+  
+  
+  /* Tablet */
+  @media (max-width: 768px) {
+  
+    .create-doc-container {
+      padding: 24px;
+    }
+  
+    .create-doc-container h2 {
+      font-size: 20px;
+    }
+  
+    .create-doc-form textarea {
+      min-height: 220px;
+    }
+  
+  }
+  
+  
+  /* Mobile */
+  @media (max-width: 480px) {
+  
+    .create-doc-page {
+      padding: 15px;
+    }
+  
+    .create-doc-container {
+      padding: 20px;
+      border-radius: 10px;
+    }
+  
+    .create-doc-container h2 {
+      font-size: 18px;
+    }
+  
+    .create-doc-form input {
+      padding: 12px;
+      font-size: 15px;
+    }
+  
+    .create-doc-form textarea {
+      padding: 12px;
+      font-size: 15px;
+      min-height: 200px;
+    }
+  
+    .create-doc-form button {
+      padding: 12px;
+      font-size: 15px;
+    }
+  
+  }
