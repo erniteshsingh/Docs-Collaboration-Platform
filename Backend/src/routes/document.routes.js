@@ -38,5 +38,5 @@ router.delete(
   deleteDocument,
 );
 
-router.post("/save", authMiddleware, saveDocument);
+router.patch("/:id", authMiddleware, saveDocument);
 export default router;

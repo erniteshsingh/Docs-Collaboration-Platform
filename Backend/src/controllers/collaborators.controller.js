@@ -8,35 +8,39 @@ export const addCollaborators = async (req, res) => {
     const documentId = req.params.id;
     const ownerId = req.user.userId;
 
-    const { collaboratorsEmail, collaboratorsRole } = req.body;
+    const { email, permission } = req.body;
 
+    console.log("email:", email);
+    console.log("role:", permission);
+
+    // Validate document ID
     if (!mongoose.Types.ObjectId.isValid(documentId)) {
       return res.status(400).json({ message: "Invalid document ID" });
     }
 
-    if (!collaboratorsEmail) {
-      return res.status(400).json({
-        message: "Collaborator email is required",
-      });
+    if (!email) {
+      return res
+        .status(400)
+        .json({ message: "Collaborator email is required" });
     }
 
-    const allowedRoles = ["editor", "viewer"];
-    if (!collaboratorsRole || !allowedRoles.includes(collaboratorsRole)) {
+    // Allowed roles
+    const allowedRoles = ["viewer", "editor"];
+    if (!permission || !allowedRoles.includes(permission)) {
       return res
         .status(400)
         .json({ message: "Role must be 'editor' or 'viewer'" });
     }
 
-    const userToAdd = await User.findOne({
-      email: collaboratorsEmail.toLowerCase().trim(),
-    });
-
+    // Find user to add
+    const userToAdd = await User.findOne({ email: email.toLowerCase().trim() });
     if (!userToAdd) {
       return res
         .status(404)
         .json({ message: "User with the provided email not found" });
     }
 
+    // Find document
     const document = await Document.findById(documentId);
     if (!document) {
       return res.status(404).json({ message: "Document not found" });
@@ -44,6 +48,7 @@ export const addCollaborators = async (req, res) => {
 
     console.log("Document Owner ID:", document.owner.toString());
 
+    // Only owner can add collaborators
     if (document.owner.toString() !== ownerId) {
       return res
         .status(403)
@@ -51,15 +56,15 @@ export const addCollaborators = async (req, res) => {
     }
 
     const ownerDoc = await User.findById(ownerId).select("email");
-    console.log("Owner Email:", ownerDoc.email);
-    console.log("Collaborator Email:", collaboratorsEmail);
 
-    if (collaboratorsEmail === ownerDoc.email) {
+    // Owner cannot be added
+    if (email.toLowerCase().trim() === ownerDoc.email.toLowerCase().trim()) {
       return res
         .status(400)
         .json({ message: "Owner cannot be added as collaborator" });
     }
 
+    // Check if user is already a collaborator
     const alreadyCollaborator = document.collaborators.find(
       (c) => c.user.toString() === userToAdd._id.toString(),
     );
@@ -69,11 +74,13 @@ export const addCollaborators = async (req, res) => {
         .json({ message: "User is already a collaborator" });
     }
 
+    // Add collaborator
     document.collaborators.push({
       user: userToAdd._id,
-      role: collaboratorsRole,
-      email: collaboratorsEmail,
+      role: permission,
+      email: email.toLowerCase().trim(),
     });
+
     await document.save();
 
     return res.status(200).json({

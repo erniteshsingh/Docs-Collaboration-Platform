@@ -7,6 +7,8 @@ import Documents from "../pages/Documents/Documents";
 import Profile from "../pages/Profile/Profile";
 import Editor from "../pages/Editor/Editor";
 import CreateDocument from "../pages/Documents/CreateDocument";
+import Share from "../pages/Share/Share";
+
 const AppRoutes = () => {
   return (
     <Routes>
@@ -17,6 +19,7 @@ const AppRoutes = () => {
       <Route path="/profile" element={<Profile />} />
       <Route path="/documents/:id" element={<Editor />} />
       <Route path="/documents/create" element={<CreateDocument />} />
+      <Route path="/documents/share" element={<Share />} />
     </Routes>
   );
 };

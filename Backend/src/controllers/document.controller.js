@@ -120,6 +120,7 @@ export const deleteDocument = async (req, res) => {
 
 export const saveDocument = async (req, res) => {
   try {
+    console.log("Entred inside saveDocuments");
     const { docId, content } = req.body;
     const userId = req.user?.userId;
 

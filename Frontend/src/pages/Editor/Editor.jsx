@@ -1,11 +1,14 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
 import "./Editor.css";
 
 const Editor = () => {
   const { id } = useParams();
+
+  const navigate = useNavigate();
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -33,7 +36,7 @@ const Editor = () => {
 
   const saveDocument = async () => {
     try {
-      await axios.put(
+      await axios.patch(
         `http://localhost:5000/api/v1/documents/${id}`,
         {
           title,
@@ -45,6 +48,7 @@ const Editor = () => {
       );
 
       toast.success("Document saved!");
+      navigate("/documents");
     } catch (error) {
       console.log("Error saving document", error);
     }

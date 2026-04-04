@@ -3,11 +3,14 @@ import { useNavigate } from "react-router-dom";
 import "./Documents.css";
 import { useAuth } from "../../context/AuthContext";
 import axios from "axios";
+import Share from "../Share/Share"; 
 
 const Documents = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [documents, setDocuments] = useState([]);
+  const [isShareOpen, setIsShareOpen] = useState(false);
+  const [currentDocId, setCurrentDocId] = useState(null);
 
   const fetchDocuments = async () => {
     try {
@@ -27,7 +30,6 @@ const Documents = () => {
         withCredentials: true,
       });
 
-      // remove from UI instantly
       setDocuments((prev) => prev.filter((doc) => doc._id !== id));
     } catch (error) {
       console.log("Delete error", error);
@@ -57,13 +59,14 @@ const Documents = () => {
           ) : (
             documents.map((doc) => (
               <div className="document-card" key={doc._id}>
-                <h3>{doc.title}</h3>
+                <div className="doc-top">
+                  <h3>{doc.title}</h3>
+                  <span className="update-badge">
+                    {new Date(doc.updatedAt).toLocaleDateString()}
+                  </span>
+                </div>
 
-                <p>{doc.content}...</p>
-
-                <small>
-                  Updated: {new Date(doc.updatedAt).toLocaleDateString()}
-                </small>
+                <p className="doc-content">{doc.content}</p>
 
                 <div className="doc-actions">
                   <button
@@ -73,7 +76,15 @@ const Documents = () => {
                     Edit
                   </button>
 
-                  <button className="share-btn">Share</button>
+                  <button
+                    className="share-btn"
+                    onClick={() => {
+                      setCurrentDocId(doc._id);
+                      setIsShareOpen(true);
+                    }}
+                  >
+                    Share
+                  </button>
 
                   <button
                     className="delete-btn"
@@ -87,6 +98,11 @@ const Documents = () => {
           )}
         </div>
       </div>
+
+      {/* Share Modal */}
+      {isShareOpen && (
+        <Share docId={currentDocId} onClose={() => setIsShareOpen(false)} />
+      )}
     </div>
   );
 };

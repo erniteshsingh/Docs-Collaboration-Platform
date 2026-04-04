@@ -52,7 +52,9 @@ const CreateDocument = () => {
             onChange={(e) => setContent(e.target.value)}
           />
 
-          <button type="submit">Create Document</button>
+          <button type="submit" onClick={handleCreate}>
+            Create Document
+          </button>
         </form>
       </div>
     </div>
