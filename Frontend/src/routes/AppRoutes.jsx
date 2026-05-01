@@ -8,7 +8,9 @@ import Profile from "../pages/Profile/Profile";
 import Editor from "../pages/Editor/Editor";
 import CreateDocument from "../pages/Documents/CreateDocument";
 import Share from "../pages/Share/Share";
-
+import PrivacyPolicy from "../pages/Privacypolicy/Privacypolicy";
+import TermsCondition from "../pages/Termcondition/TermsCondition";
+import Contact from "../pages/Contact/Contact";
 const AppRoutes = () => {
   return (
     <Routes>
@@ -20,6 +22,9 @@ const AppRoutes = () => {
       <Route path="/documents/:id" element={<Editor />} />
       <Route path="/documents/create" element={<CreateDocument />} />
       <Route path="/documents/share" element={<Share />} />
+      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+      <Route path="/termsconditon" element={<TermsCondition />} />
+      <Route path="/contact" element={<Contact />} />
     </Routes>
   );
 };

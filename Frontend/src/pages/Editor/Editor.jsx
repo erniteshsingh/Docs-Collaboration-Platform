@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -7,8 +7,11 @@ import "./Editor.css";
 
 const Editor = () => {
   const { id } = useParams();
-
+  const location = useLocation();
   const navigate = useNavigate();
+
+  const role = location.state?.role || "viewer";
+  const isViewer = role === "viewer";
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -27,41 +30,35 @@ const Editor = () => {
 
       setTitle(doc.title);
       setContent(doc.content || "");
-    } catch (error) {
-      console.log("Error fetching document", error);
+    } catch {
+      toast.error("Failed to load document");
     } finally {
       setLoading(false);
     }
   };
 
   const saveDocument = async () => {
+    if (isViewer) {
+      toast.error("You do not have permission to edit");
+      return;
+    }
+
     try {
       await axios.patch(
         `http://localhost:5000/api/v1/documents/${id}`,
-        {
-          title,
-          content,
-        },
-        {
-          withCredentials: true,
-        },
+        { title, content },
+        { withCredentials: true },
       );
 
       toast.success("Document saved!");
       navigate("/documents");
-    } catch (error) {
-      console.log("Error saving document", error);
+    } catch {
+      toast.error("Error saving document");
     }
-  };
-
-  const shareDocument = () => {
-    toast.success("Share feature coming soon");
   };
 
   useEffect(() => {
-    if (id) {
-      fetchDocument();
-    }
+    if (id) fetchDocument();
   }, [id]);
 
   if (loading) {
@@ -71,28 +68,47 @@ const Editor = () => {
   return (
     <div className="editor-page">
       <div className="editor-container">
+       
         <div className="editor-header">
           <input
             className="editor-title"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e) => {
+              if (!isViewer) setTitle(e.target.value);
+              else toast.error("View only access");
+            }}
+            disabled={isViewer}
           />
 
           <div className="editor-actions">
-            <button className="save-btn" onClick={saveDocument}>
-              Save
-            </button>
+            {!isViewer ? (
+              <>
+                <button className="save-btn" onClick={saveDocument}>
+                  Save
+                </button>
 
-            <button className="share-btn" onClick={shareDocument}>
-              Share
-            </button>
+                <button className="share-btn">Share</button>
+              </>
+            ) : (
+              <button
+                className="back-btn"
+                onClick={() => navigate("/documents")}
+              >
+                Back to Documents
+              </button>
+            )}
           </div>
         </div>
 
+       
         <textarea
           className="editor-textarea"
           value={content}
-          onChange={(e) => setContent(e.target.value)}
+          onChange={(e) => {
+            if (!isViewer) setContent(e.target.value);
+            else toast.error("You do not have permission to edit");
+          }}
+          readOnly={isViewer}
           placeholder="Start writing your document..."
         />
       </div>

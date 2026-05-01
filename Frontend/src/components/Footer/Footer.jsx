@@ -5,12 +5,11 @@ const Footer = () => {
   return (
     <footer className="footer">
       <div className="footer-container">
-
         <div className="footer-section">
           <h2 className="footer-logo">DocCollab</h2>
           <p className="footer-text">
-            A real-time collaborative document platform where teams can
-            create, edit and manage documents together.
+            A real-time collaborative document platform where teams can create,
+            edit and manage documents together.
           </p>
         </div>
 
@@ -23,11 +22,10 @@ const Footer = () => {
 
         <div className="footer-section">
           <h3>Resources</h3>
-          <a href="#">Help Center</a>
-          <a href="#">Privacy Policy</a>
-          <a href="#">Terms</a>
+          <Link to="/privacy-policy">Privacy Policy</Link>
+          <Link to="/termsconditon">Terms & Conditions</Link>
+          <Link to="/contact">Contact Us</Link>
         </div>
-
       </div>
 
       <div className="footer-bottom">

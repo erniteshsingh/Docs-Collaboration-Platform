@@ -32,34 +32,36 @@ export const createDocument = async (req, res) => {
 
 export const getAllDocuments = async (req, res) => {
   try {
-    const userId = req.user.userId;
+    const userId = req.user.userId || req.user.id || req.user._id;
 
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
-
     const skip = (page - 1) * limit;
 
-    const documents = await Document.find({
+    const query = {
       $or: [{ owner: userId }, { "collaborators.user": userId }],
-    })
+    };
+
+    const documents = await Document.find(query)
       .sort({ updatedAt: -1 })
       .skip(skip)
       .limit(limit)
-      .select("title content owner updatedAt collaborators");
+      .populate("owner", "username email")
+      .populate("collaborators.user", "username email")
+      .select("title content owner updatedAt collaborators")
+      .lean();
 
-    const total = await Document.countDocuments({
-      $or: [{ owner: userId }, { "collaborators.user": userId }],
-    });
+    const total = await Document.countDocuments(query);
 
     return res.status(200).json({
       success: true,
       page,
       limit,
       total,
+      totalPages: Math.ceil(total / limit),
       documents,
     });
   } catch (error) {
-    console.error("Get Documents Error:", error);
     return res.status(500).json({
       success: false,
       message: "Server Error",

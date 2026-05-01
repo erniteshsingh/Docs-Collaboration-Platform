@@ -6,91 +6,49 @@ import User from "../models/user.model.js";
 export const addCollaborators = async (req, res) => {
   try {
     const documentId = req.params.id;
-    const ownerId = req.user.userId;
-
+    const requesterId = req.user.userId || req.user.id || req.user._id;
     const { email, permission } = req.body;
 
-    console.log("email:", email);
-    console.log("role:", permission);
+    const userToAdd = await User.findOne({
+      email: email.toLowerCase().trim(),
+    });
 
-    // Validate document ID
-    if (!mongoose.Types.ObjectId.isValid(documentId)) {
-      return res.status(400).json({ message: "Invalid document ID" });
-    }
+    if (!userToAdd) return res.status(404).json({ message: "User not found" });
 
-    if (!email) {
-      return res
-        .status(400)
-        .json({ message: "Collaborator email is required" });
-    }
-
-    // Allowed roles
-    const allowedRoles = ["viewer", "editor"];
-    if (!permission || !allowedRoles.includes(permission)) {
-      return res
-        .status(400)
-        .json({ message: "Role must be 'editor' or 'viewer'" });
-    }
-
-    // Find user to add
-    const userToAdd = await User.findOne({ email: email.toLowerCase().trim() });
-    if (!userToAdd) {
-      return res
-        .status(404)
-        .json({ message: "User with the provided email not found" });
-    }
-
-    // Find document
     const document = await Document.findById(documentId);
-    if (!document) {
+
+    if (!document)
       return res.status(404).json({ message: "Document not found" });
-    }
 
-    console.log("Document Owner ID:", document.owner.toString());
-
-    // Only owner can add collaborators
-    if (document.owner.toString() !== ownerId) {
+    if (document.owner.toString() !== requesterId.toString()) {
       return res
         .status(403)
-        .json({ message: "Only owner can add collaborators" });
+        .json({ message: "Access denied: Only owners can share" });
     }
 
-    const ownerDoc = await User.findById(ownerId).select("email");
-
-    // Owner cannot be added
-    if (email.toLowerCase().trim() === ownerDoc.email.toLowerCase().trim()) {
-      return res
-        .status(400)
-        .json({ message: "Owner cannot be added as collaborator" });
-    }
-
-    // Check if user is already a collaborator
-    const alreadyCollaborator = document.collaborators.find(
+    const isAlreadyAdded = document.collaborators.some(
       (c) => c.user.toString() === userToAdd._id.toString(),
     );
-    if (alreadyCollaborator) {
+
+    if (isAlreadyAdded)
       return res
         .status(400)
         .json({ message: "User is already a collaborator" });
-    }
 
-    // Add collaborator
     document.collaborators.push({
       user: userToAdd._id,
       role: permission,
-      email: email.toLowerCase().trim(),
+      email: userToAdd.email,
     });
 
     await document.save();
 
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
       message: "Collaborator added successfully",
-      collaborators: document.collaborators,
     });
   } catch (error) {
-    console.error("Add Collaborator Error:", error);
-    return res.status(500).json({ message: "Server Error" });
+    res.status(500).json({ message: "Server Error" });
   }
 };
 

@@ -57,9 +57,7 @@
     color: #9ca3af;
   }
   
-  /* -------------------- */
-  /* LARGE TABLET */
-  /* -------------------- */
+ 
   
   @media (max-width: 1024px) {
     .footer-container {
@@ -68,9 +66,6 @@
     }
   }
   
-  /* -------------------- */
-  /* TABLET */
-  /* -------------------- */
   
   @media (max-width: 768px) {
     .footer-container {
@@ -83,10 +78,7 @@
     }
   }
   
-  /* -------------------- */
-  /* MOBILE */
-  /* -------------------- */
-  
+
   @media (max-width: 520px) {
     .footer-container {
       grid-template-columns: 1fr;
@@ -107,9 +99,7 @@
     }
   }
   
-  /* -------------------- */
-  /* SMALL MOBILE */
-  /* -------------------- */
+
   
   @media (max-width: 380px) {
     .footer-container {

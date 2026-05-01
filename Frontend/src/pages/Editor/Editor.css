@@ -1,100 +1,139 @@
 .editor-page {
-    min-height: 100vh;
-    background-color: #f5f6fa;
-    display: flex;
-    justify-content: center;
-    padding: 40px 20px;
-  }
-  
+  min-height: 100vh;
+  background: linear-gradient(to bottom right, #f8fafc, #eef2ff);
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.editor-container {
+  width: 100%;
+  max-width: 920px;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 28px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+}
+
+.editor-container:hover {
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.1);
+}
+
+.editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+  gap: 10px;
+}
+
+.editor-title {
+  font-size: 24px;
+  font-weight: 700;
+  border: none;
+  outline: none;
+  width: 100%;
+  color: #0f172a;
+}
+
+.editor-title::placeholder {
+  color: #94a3b8;
+}
+
+.editor-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.save-btn,
+.share-btn,
+.back-btn {
+  padding: 9px 16px;
+  border-radius: 8px;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.save-btn {
+  background: #2563eb;
+  color: white;
+}
+
+.save-btn:hover {
+  background: #1e40af;
+  transform: translateY(-1px);
+}
+
+.share-btn {
+  background: #10b981;
+  color: white;
+}
+
+.share-btn:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+.back-btn {
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.back-btn:hover {
+  background: #e2e8f0;
+}
+
+.editor-textarea {
+  width: 100%;
+  min-height: 520px;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  line-height: 1.8;
+  resize: none;
+  font-family: "Inter", sans-serif;
+  color: #1e293b;
+}
+
+.editor-textarea:read-only {
+  background: #f8fafc;
+  cursor: not-allowed;
+}
+
+.editor-textarea::-webkit-scrollbar {
+  width: 6px;
+}
+
+.editor-textarea::-webkit-scrollbar-thumb {
+  background: #cbd5f5;
+  border-radius: 10px;
+}
+
+@media (max-width: 768px) {
   .editor-container {
-    width: 100%;
-    max-width: 900px;
-    background: #ffffff;
-    border-radius: 10px;
-    padding: 25px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-  }
-  
-  .editor-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-  }
-  
-  .editor-header h2 {
-    font-size: 22px;
-    font-weight: 600;
-    color: #222;
-  }
-  
-  .doc-id {
-    font-size: 12px;
-    color: #888;
-  }
-  
-  .editor-textarea {
-    width: 100%;
-    min-height: 500px;
-    border: none;
-    outline: none;
-    font-size: 16px;
-    line-height: 1.7;
-    resize: none;
-    font-family: "Inter", sans-serif;
-  }
-  .editor-actions {
-    display: flex;
-    gap: 10px;
-  }
-  
-  .save-btn {
-    background: #2563eb;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 500;
-  }
-  
-  .save-btn:hover {
-    background: #1e4ed8;
-  }
-  
-  .share-btn {
-    background: #10b981;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 500;
-  }
-  
-  .share-btn:hover {
-    background: #059669;
-  }
-  .editor-title {
-    font-size: 22px;
-    font-weight: 600;
-    border: none;
-    outline: none;
-    width: 70%;
+    padding: 20px;
   }
 
-  
-  @media (max-width: 768px) {
-    .editor-container {
-      padding: 18px;
-    }
-  
-    .editor-textarea {
-      min-height: 400px;
-      font-size: 15px;
-    }
-  
-    .editor-header h2 {
-      font-size: 18px;
-    }
+  .editor-title {
+    font-size: 20px;
   }
+
+  .editor-textarea {
+    min-height: 420px;
+    font-size: 15px;
+  }
+
+  .editor-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .editor-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

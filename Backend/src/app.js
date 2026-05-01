@@ -26,4 +26,7 @@ app.use("/api/v1/documents", documentRoutes);
 import collaboratorRoutes from "./routes/collaborators.routes.js";
 app.use("/api/v1/documents", collaboratorRoutes);
 
+import contactRoutes from "./routes/contact.routes.js";
+app.use("/api/v1/contact", contactRoutes);
+
 export default app;

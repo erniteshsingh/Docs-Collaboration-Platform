@@ -2,9 +2,16 @@ import bcrypt from "bcrypt";
 import User from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 
+const isProduction = process.env.NODE_ENV === "production";
+
+const cookieOptions = {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: "lax",
+};
+
 export const registerUser = async (req, res) => {
   try {
-    console.log("user want to register:", req.body);
     const { username, email, password } = req.body;
 
     if (!username || !email || !password) {
@@ -47,16 +54,12 @@ export const registerUser = async (req, res) => {
     await user.save();
 
     res.cookie("accessToken", token, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      ...cookieOptions,
       maxAge: 24 * 60 * 60 * 1000,
     });
 
     res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      ...cookieOptions,
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -69,9 +72,7 @@ export const registerUser = async (req, res) => {
         email: user.email,
       },
     });
-  } catch (error) {
-    console.error("Register Error:", error);
-
+  } catch {
     return res.status(500).json({
       success: false,
       message: "Server error",
@@ -82,7 +83,6 @@ export const registerUser = async (req, res) => {
 export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log(req.body);
 
     if (!email || !password) {
       return res.status(400).json({
@@ -125,16 +125,12 @@ export const loginUser = async (req, res) => {
     await user.save();
 
     res.cookie("accessToken", token, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      ...cookieOptions,
       maxAge: 24 * 60 * 60 * 1000,
     });
 
     res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      ...cookieOptions,
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -147,9 +143,7 @@ export const loginUser = async (req, res) => {
         email: user.email,
       },
     });
-  } catch (error) {
-    console.error("Login Error:", error);
-
+  } catch {
     return res.status(500).json({
       success: false,
       message: "Server error",
@@ -170,21 +164,14 @@ export const logoutUser = async (req, res) => {
       }
     }
 
-    res.clearCookie("accessToken", {
-      httpOnly: true,
-      sameSite: "lax",
-    });
-
-    res.clearCookie("refreshToken", {
-      httpOnly: true,
-      sameSite: "lax",
-    });
+    res.clearCookie("accessToken", cookieOptions);
+    res.clearCookie("refreshToken", cookieOptions);
 
     return res.status(200).json({
       success: true,
       message: "Logged out successfully",
     });
-  } catch (error) {
+  } catch {
     return res.status(500).json({
       success: false,
       message: "Logout error",
@@ -219,17 +206,15 @@ export const refreshAccessToken = async (req, res) => {
     );
 
     res.cookie("accessToken", newAccessToken, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-      maxAge: 60 * 24 * 60 * 1000,
+      ...cookieOptions,
+      maxAge: 24 * 60 * 60 * 1000,
     });
 
     return res.status(200).json({
       success: true,
       message: "Access token refreshed",
     });
-  } catch (error) {
+  } catch {
     return res.status(401).json({
       message: "Invalid refresh token",
     });
