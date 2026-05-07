@@ -29,4 +29,9 @@ app.use("/api/v1/documents", collaboratorRoutes);
 import contactRoutes from "./routes/contact.routes.js";
 app.use("/api/v1/contact", contactRoutes);
 
+import statsRoutes from "./routes/state.routes.js"
+app.use("/api/v1", statsRoutes);
+
+import aiRoutes from "./routes/airoutes.routes.js"
+app.use("/api/v1/ai", aiRoutes);
 export default app;

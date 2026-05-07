@@ -58,6 +58,33 @@
   padding-top: 18px;
 }
 
+.profile-input-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18px;
+}
+
+.profile-input-group label {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #475569;
+}
+
+.profile-input-group input {
+  padding: 13px 14px;
+  border-radius: 10px;
+  border: 1px solid #dbe2ea;
+  outline: none;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.profile-input-group input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
+}
+
 .profile-row {
   display: flex;
   justify-content: space-between;
@@ -90,8 +117,6 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.25s ease;
-  position: relative;
-  overflow: hidden;
 }
 
 .btn:active {
@@ -120,13 +145,6 @@
   box-shadow: 0 10px 24px rgba(239, 68, 68, 0.4);
 }
 
-.profile-loading,
-.profile-error {
-  text-align: center;
-  padding: 40px 0;
-  color: #64748b;
-}
-
 @media (max-width: 480px) {
   .profile-card {
     padding: 22px;
@@ -141,10 +159,6 @@
     width: 58px;
     height: 58px;
     font-size: 24px;
-  }
-
-  .profile-row {
-    font-size: 14px;
   }
 
   .profile-actions {
