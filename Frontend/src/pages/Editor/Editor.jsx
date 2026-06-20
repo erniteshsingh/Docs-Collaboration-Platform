@@ -1,8 +1,8 @@
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { socket } from "../../socket/socket";
 import "./Editor.css";
 
 const Editor = () => {
@@ -23,43 +23,69 @@ const Editor = () => {
 
       const res = await axios.get(
         `http://localhost:5000/api/v1/documents/${id}`,
-        { withCredentials: true },
+        {
+          withCredentials: true,
+        },
       );
 
       const doc = res.data.document;
 
       setTitle(doc.title);
       setContent(doc.content || "");
-    } catch {
+    } catch (error) {
       toast.error("Failed to load document");
     } finally {
       setLoading(false);
     }
   };
 
-  const saveDocument = async () => {
-    if (isViewer) {
-      toast.error("You do not have permission to edit");
-      return;
+  useEffect(() => {
+    if (id) {
+      fetchDocument();
     }
-
-    try {
-      await axios.patch(
-        `http://localhost:5000/api/v1/documents/${id}`,
-        { title, content },
-        { withCredentials: true },
-      );
-
-      toast.success("Document saved!");
-      navigate("/documents");
-    } catch {
-      toast.error("Error saving document");
-    }
-  };
+  }, [id]);
 
   useEffect(() => {
-    if (id) fetchDocument();
+    if (!id) return;
+
+    socket.connect();
+
+    socket.on("connect", () => {
+      console.log("Socket connected:", socket.id);
+
+      socket.emit("join-document", id);
+    });
+
+    socket.on("receive-changes", (newContent) => {
+      setContent(newContent);
+    });
+
+    socket.on("connect_error", (err) => {
+      console.log("Socket Error:", err.message);
+    });
+
+    return () => {
+      socket.off("receive-changes");
+      socket.off("connect");
+      socket.off("connect_error");
+      socket.disconnect();
+    };
   }, [id]);
+
+  useEffect(() => {
+    if (isViewer) return;
+
+    const timer = setTimeout(() => {
+      socket.emit("save-document", {
+        docId: id,
+        content,
+      });
+
+      console.log("Document auto-saved");
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [content, id, isViewer]);
 
   if (loading) {
     return <div className="editor-page">Loading document...</div>;
@@ -68,14 +94,16 @@ const Editor = () => {
   return (
     <div className="editor-page">
       <div className="editor-container">
-       
         <div className="editor-header">
           <input
             className="editor-title"
             value={title}
             onChange={(e) => {
-              if (!isViewer) setTitle(e.target.value);
-              else toast.error("View only access");
+              if (!isViewer) {
+                setTitle(e.target.value);
+              } else {
+                toast.error("View only access");
+              }
             }}
             disabled={isViewer}
           />
@@ -83,7 +111,10 @@ const Editor = () => {
           <div className="editor-actions">
             {!isViewer ? (
               <>
-                <button className="save-btn" onClick={saveDocument}>
+                <button
+                  className="save-btn"
+                  onClick={() => toast.success("Auto-save already enabled")}
+                >
                   Save
                 </button>
 
@@ -100,13 +131,23 @@ const Editor = () => {
           </div>
         </div>
 
-       
         <textarea
           className="editor-textarea"
           value={content}
           onChange={(e) => {
-            if (!isViewer) setContent(e.target.value);
-            else toast.error("You do not have permission to edit");
+            if (isViewer) {
+              toast.error("You do not have permission to edit");
+              return;
+            }
+
+            const newContent = e.target.value;
+
+            setContent(newContent);
+
+            socket.emit("edit-document", {
+              docId: id,
+              content: newContent,
+            });
           }}
           readOnly={isViewer}
           placeholder="Start writing your document..."

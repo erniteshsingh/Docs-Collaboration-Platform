@@ -11,6 +11,7 @@ import Share from "../pages/Share/Share";
 import PrivacyPolicy from "../pages/Privacypolicy/Privacypolicy";
 import TermsCondition from "../pages/Termcondition/TermsCondition";
 import Contact from "../pages/Contact/Contact";
+import UpdatePassword from "../pages/Updatepassword/UpdatePassword";
 const AppRoutes = () => {
   return (
     <Routes>
@@ -24,6 +25,7 @@ const AppRoutes = () => {
       <Route path="/documents/share" element={<Share />} />
       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       <Route path="/termsconditon" element={<TermsCondition />} />
+      <Route path="/update-password" element={<UpdatePassword />} />
       <Route path="/contact" element={<Contact />} />
     </Routes>
   );

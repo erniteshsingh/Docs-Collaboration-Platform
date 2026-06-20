@@ -1,67 +1,68 @@
 import { Server } from "socket.io";
 import Document from "../models/documents.model.js";
-import jwt from "jsonwebtoken";
+
+let io;
 
 export const initSocket = (server) => {
-  const io = new Server(server, {
-    cors: { origin: "*" },
-  });
-
-
-  io.use((socket, next) => {
-    try {
-      const token = socket.handshake.auth?.token;
-      if (!token) return next(new Error("Unauthorized"));
-
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      socket.userId = decoded.userId; 
-      next();
-    } catch (err) {
-      next(new Error("Unauthorized"));
-    }
+  io = new Server(server, {
+    cors: {
+      origin: "http://localhost:5173",
+      methods: ["GET", "POST"],
+      credentials: true,
+    },
   });
 
   io.on("connection", (socket) => {
-  
-    socket.on("join-document", (docId) => {
-      socket.join(docId);
+    socket.on("join-document", async (docId) => {
+      try {
+        if (!docId) return;
+
+        const document = await Document.findById(docId);
+
+        if (!document) {
+          return socket.emit("error-message", "Document not found");
+        }
+
+        socket.join(docId);
+
+        console.log(`Socket ${socket.id} joined document ${docId}`);
+      } catch (error) {
+        console.error("Join Document Error:", error);
+      }
     });
 
     socket.on("edit-document", ({ docId, content }) => {
+      if (!docId) return;
+
       socket.to(docId).emit("receive-changes", content);
     });
 
-  
     socket.on("save-document", async ({ docId, content }) => {
       try {
         if (!docId) return;
 
         const document = await Document.findById(docId);
-        if (!document) return;
 
-        const userId = socket.userId;
-
-        const isOwner = document.owner.toString() === userId;
-
-        const collaborator = document.collaborators.find(
-          (c) => c.user.toString() === userId,
-        );
-
-        const canEdit =
-          isOwner || (collaborator && collaborator.role === "editor");
-
-        if (!canEdit) {
-          console.log(" Save blocked: no permission");
-          return;
+        if (!document) {
+          return socket.emit("error-message", "Document not found");
         }
 
         document.content = content;
-        await document.save();
 
-        console.log("Document saved to DB");
-      } catch (err) {
-        console.error("Save Document Error:", err);
+        await document.save();
+      } catch (error) {
+        console.error("Save Document Error:", error);
       }
     });
+
+    socket.on("disconnect", () => {});
   });
+};
+
+export const getIO = () => {
+  if (!io) {
+    throw new Error("Socket.io not initialized");
+  }
+
+  return io;
 };
