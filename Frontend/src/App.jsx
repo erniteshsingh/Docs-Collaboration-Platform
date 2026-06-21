@@ -1,7 +1,6 @@
 import React from "react";
 
-import AppRoutes from "./routes/AppRoutes.jsx";
-import AppRoutes from "./routes/AppRoutes.jsx";
+import AppRoutesT from "./routes/AppRoutes.jsx";
 import Navbar from "./components/Navbar/Navbar";
 import Footer from "./components/Footer/Footer";
 import { ToastContainer } from "react-toastify";
@@ -23,7 +22,7 @@ const App = () => {
       <Navbar />
 
       <main className="app-content">
-        <AppRoutes />
+        <AppRoutesT />
       </main>
 
       <Footer />
