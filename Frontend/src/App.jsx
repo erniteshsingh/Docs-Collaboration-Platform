@@ -1,6 +1,6 @@
 import React from "react";
 
-import AppRoutes from "./routes/AppRoutes";
+import AppRoutes from "./routes/AppRoutes.jsx";
 import Navbar from "./components/Navbar/Navbar";
 import Footer from "./components/Footer/Footer";
 import { ToastContainer } from "react-toastify";
