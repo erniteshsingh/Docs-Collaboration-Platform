@@ -36,7 +36,7 @@ const Documents = () => {
     if (!window.confirm("Delete this document?")) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/v1/documents/${id}`, {
+      await axios.delete(`/api/v1/documents/${id}`, {
         withCredentials: true,
       });
       setDocuments((prev) => prev.filter((d) => d._id !== id));

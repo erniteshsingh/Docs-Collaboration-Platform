@@ -18,9 +18,7 @@ const App = () => {
         pauseOnHover
         theme="colored"
       />
-
       <Navbar />
-
       <main className="app-content">
         <AppRoutesT />
       </main>
