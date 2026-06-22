@@ -1,9 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../utils/axios"; // path apne folder structure ke according adjust kar lena
 
 const AuthContext = createContext();
-
-axios.defaults.withCredentials = true;
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -21,47 +19,37 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (formData) => {
-    const res = await axios.post(
-      "http://localhost:5000/api/v1/auth/login",
-      formData,
-    );
+    const res = await axios.post("/api/v1/auth/login", formData);
 
     const { user } = res.data;
 
     localStorage.setItem("user", JSON.stringify(user));
-
     setUser(user);
 
     return res.data;
   };
 
   const register = async (formData) => {
-    const res = await axios.post(
-      "http://localhost:5000/api/v1/auth/register",
-      formData,
-    );
+    const res = await axios.post("/api/v1/auth/register", formData);
 
     const { user } = res.data;
 
     localStorage.setItem("user", JSON.stringify(user));
-
     setUser(user);
 
     return res.data;
   };
 
   const logoutUser = async () => {
-    await axios.post("http://localhost:5000/api/v1/auth/logout");
+    await axios.post("/api/v1/auth/logout");
 
     localStorage.removeItem("user");
-
     setUser(null);
   };
 
   const profile = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/v1/users/me");
-
+      const res = await axios.get("/api/v1/users/me");
       setUserProfile(res.data);
     } catch (err) {
       console.error("Profile fetch failed", err);
