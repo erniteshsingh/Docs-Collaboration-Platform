@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import axios from "../utils/axios"; // path apne folder structure ke according adjust kar lena
+import axios from "../api/axios"
 
 const AuthContext = createContext();
 
