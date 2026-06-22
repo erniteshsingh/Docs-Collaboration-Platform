@@ -1,5 +1,6 @@
 import { useState } from "react";
-import axios from "axios";
+// import axios from "axios";
+import axios from "../../utils/axios";
 import { useNavigate } from "react-router-dom";
 import "./CreateDocument.css";
 
@@ -17,7 +18,7 @@ const CreateDocument = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/v1/documents",
+        "/api/v1/documents",
         { title, content },
         { withCredentials: true },
       );
@@ -35,7 +36,7 @@ const CreateDocument = () => {
     try {
       setLoadingAI(true);
 
-      const res = await axios.post("http://localhost:5000/api/v1/ai/generate", {
+      const res = await axios.post("/api/v1/ai/generate", {
         prompt: aiPrompt,
         mode: aiMode,
       });
@@ -73,7 +74,6 @@ const CreateDocument = () => {
         </div>
 
         <form onSubmit={handleCreate} className="create-doc-form">
-         
           <div className="input-group">
             <label className="input-label">Document Title</label>
             <div className="input-wrapper">
@@ -101,7 +101,6 @@ const CreateDocument = () => {
             </div>
           </div>
 
-         
           <div className="input-group">
             <div className="label-row">
               <label className="input-label">Content</label>
@@ -115,7 +114,6 @@ const CreateDocument = () => {
             />
           </div>
 
-        
           <div className="ai-section">
             <div className="ai-section-glow" />
 
@@ -227,7 +225,6 @@ const CreateDocument = () => {
             </div>
           </div>
 
-          
           <button type="submit" className="create-btn">
             <span className="btn-inner">
               <svg

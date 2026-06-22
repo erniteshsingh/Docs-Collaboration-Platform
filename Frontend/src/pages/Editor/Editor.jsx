@@ -1,7 +1,8 @@
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import axios from "axios";
+
+import axios from "../../api/axios";
 import { socket } from "../../socket/socket";
 import "./Editor.css";
 
@@ -21,12 +22,9 @@ const Editor = () => {
     try {
       setLoading(true);
 
-      const res = await axios.get(
-        `http://localhost:5000/api/v1/documents/${id}`,
-        {
-          withCredentials: true,
-        },
-      );
+      const res = await axios.get(`/api/v1/documents/${id}`, {
+        withCredentials: true,
+      });
 
       const doc = res.data.document;
 

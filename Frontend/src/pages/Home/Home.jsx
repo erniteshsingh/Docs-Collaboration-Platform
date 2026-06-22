@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "../../api/axios";
 import "./Home.css";
 
 const Home = () => {
@@ -10,7 +10,7 @@ const Home = () => {
 
   const fetchStats = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/v1/stats");
+      const res = await axios.get("/api/v1/stats");
       setStats(res.data);
     } catch (error) {
       console.log("Error fetching stats");

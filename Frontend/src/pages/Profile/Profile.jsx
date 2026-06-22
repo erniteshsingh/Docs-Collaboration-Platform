@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import axios from "axios";
+import axios from "../../api/axios";
 import "./Profile.css";
 
 const Profile = () => {
@@ -17,7 +17,7 @@ const Profile = () => {
     try {
       setLoading(true);
       const res = await axios.put(
-        "http://localhost:5000/api/v1/users/update-profile",
+        "/api/v1/users/update-profile",
         { username, email },
         { withCredentials: true },
       );

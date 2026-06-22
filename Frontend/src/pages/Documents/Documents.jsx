@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Documents.css";
 import { useAuth } from "../../context/AuthContext";
-import axios from "axios";
+import axios from "../../api/axios";
+
 import Share from "../Share/Share";
 
 const Documents = () => {
@@ -17,7 +18,7 @@ const Documents = () => {
   const fetchDocuments = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:5000/api/v1/documents", {
+      const res = await axios.get("/api/v1/documents", {
         withCredentials: true,
       });
       setDocuments(res.data.documents || []);

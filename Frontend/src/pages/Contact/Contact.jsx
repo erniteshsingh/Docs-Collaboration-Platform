@@ -1,6 +1,7 @@
 import "./Contact.css";
 import { useState } from "react";
 import axios from "axios";
+import axios from "../../api/axios";
 import { toast } from "react-toastify";
 
 const Contact = () => {
@@ -15,7 +16,7 @@ const Contact = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await axios.post("http://localhost:5000/api/v1/contact", form);
+      await axios.post("/api/v1/contact", form);
       toast.success("We'll connect with you soon!");
       setForm({ name: "", email: "", message: "" });
     } catch (error) {
@@ -24,7 +25,6 @@ const Contact = () => {
       setLoading(false);
     }
   };
-
   return (
     <div className="contact-page">
       <div className="contact-bg-orb orb-1" />

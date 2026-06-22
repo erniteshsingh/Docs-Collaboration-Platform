@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import axios from "../../api/axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import "./UpdatePassword.css";
@@ -24,7 +24,7 @@ const UpdatePassword = () => {
       setLoading(true);
 
       const res = await axios.put(
-        "http://localhost:5000/api/v1/users/update-password",
+        "/api/v1/users/update-password",
         {
           currentPassword,
           newPassword,

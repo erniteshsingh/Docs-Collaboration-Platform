@@ -1,8 +1,8 @@
 import { useState } from "react";
-import axios from "axios";
 import { toast } from "react-toastify";
 import "./Share.css";
 
+import axios from "../../api/axios";
 const Share = ({ docId, onClose }) => {
   const [email, setEmail] = useState("");
   const [permission, setPermission] = useState("viewer");
@@ -17,7 +17,7 @@ const Share = ({ docId, onClose }) => {
     try {
       setLoading(true);
       await axios.post(
-        `http://localhost:5000/api/v1/documents/${docId}/collaborators`,
+        `/api/v1/documents/${docId}/collaborators`,
         { email, permission },
         { withCredentials: true },
       );
