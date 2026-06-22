@@ -8,7 +8,7 @@ import Profile from "../pages/Profile/Profile";
 import Editor from "../pages/Editor/Editor";
 import CreateDocument from "../pages/Documents/CreateDocument";
 import Share from "../pages/Share/Share";
-import PrivacyPolicy from "../pages/Privacypolicy/Privacypolicy";
+import PrivacyPolicy from "../pages/Privacypolicy/PrivacyPolicy";
 import TermsCondition from "../pages/Termcondition/TermsCondition";
 import Contact from "../pages/Contact/Contact";
 import UpdatePassword from "../pages/Updatepassword/UpdatePassword";
