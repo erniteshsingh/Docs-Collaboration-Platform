@@ -2,19 +2,15 @@ import bcrypt from "bcrypt";
 import User from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 
-const isProduction = process.env.NODE_ENV === "production";
-
 const cookieOptions = {
   httpOnly: true,
-  secure: isProduction,
-  sameSite: "lax",
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
 };
 
 export const registerUser = async (req, res) => {
   try {
     const { username, email, password } = req.body;
-
-    console.log("Sab chij mil gya hai:", username, email, password);
 
     if (!username || !email || !password) {
       return res.status(400).json({
@@ -74,7 +70,9 @@ export const registerUser = async (req, res) => {
         email: user.email,
       },
     });
-  } catch {
+  } catch (error) {
+    console.log(error);
+
     return res.status(500).json({
       success: false,
       message: "Server error",
@@ -145,7 +143,9 @@ export const loginUser = async (req, res) => {
         email: user.email,
       },
     });
-  } catch {
+  } catch (error) {
+    console.log(error);
+
     return res.status(500).json({
       success: false,
       message: "Server error",
@@ -173,7 +173,9 @@ export const logoutUser = async (req, res) => {
       success: true,
       message: "Logged out successfully",
     });
-  } catch {
+  } catch (error) {
+    console.log(error);
+
     return res.status(500).json({
       success: false,
       message: "Logout error",
@@ -187,6 +189,7 @@ export const refreshAccessToken = async (req, res) => {
 
     if (!refreshToken) {
       return res.status(401).json({
+        success: false,
         message: "Refresh token missing",
       });
     }
@@ -197,6 +200,7 @@ export const refreshAccessToken = async (req, res) => {
 
     if (!user || user.refreshToken !== refreshToken) {
       return res.status(401).json({
+        success: false,
         message: "Invalid refresh token",
       });
     }
@@ -216,8 +220,11 @@ export const refreshAccessToken = async (req, res) => {
       success: true,
       message: "Access token refreshed",
     });
-  } catch {
+  } catch (error) {
+    console.log(error);
+
     return res.status(401).json({
+      success: false,
       message: "Invalid refresh token",
     });
   }
