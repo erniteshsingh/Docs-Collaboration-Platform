@@ -2,10 +2,13 @@ import bcrypt from "bcrypt";
 import User from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 
+const isProduction = process.env.NODE_ENV === "production";
+
 const cookieOptions = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  secure: isProduction,
+  sameSite: isProduction ? "none" : "lax",
+  path: "/",
 };
 
 export const registerUser = async (req, res) => {
@@ -38,7 +41,7 @@ export const registerUser = async (req, res) => {
       password: hashedPassword,
     });
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+    const accessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: "24h",
     });
 
@@ -51,7 +54,7 @@ export const registerUser = async (req, res) => {
     user.refreshToken = refreshToken;
     await user.save();
 
-    res.cookie("accessToken", token, {
+    res.cookie("accessToken", accessToken, {
       ...cookieOptions,
       maxAge: 24 * 60 * 60 * 1000,
     });
@@ -111,7 +114,7 @@ export const loginUser = async (req, res) => {
       });
     }
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+    const accessToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: "24h",
     });
 
@@ -124,7 +127,7 @@ export const loginUser = async (req, res) => {
     user.refreshToken = refreshToken;
     await user.save();
 
-    res.cookie("accessToken", token, {
+    res.cookie("accessToken", accessToken, {
       ...cookieOptions,
       maxAge: 24 * 60 * 60 * 1000,
     });
@@ -155,7 +158,7 @@ export const loginUser = async (req, res) => {
 
 export const logoutUser = async (req, res) => {
   try {
-    const refreshToken = req.cookies.refreshToken;
+    const refreshToken = req.cookies?.refreshToken;
 
     if (refreshToken) {
       const user = await User.findOne({ refreshToken });
@@ -166,8 +169,15 @@ export const logoutUser = async (req, res) => {
       }
     }
 
-    res.clearCookie("accessToken", cookieOptions);
-    res.clearCookie("refreshToken", cookieOptions);
+    res.clearCookie("accessToken", {
+      ...cookieOptions,
+      path: "/",
+    });
+
+    res.clearCookie("refreshToken", {
+      ...cookieOptions,
+      path: "/",
+    });
 
     return res.status(200).json({
       success: true,
@@ -185,7 +195,7 @@ export const logoutUser = async (req, res) => {
 
 export const refreshAccessToken = async (req, res) => {
   try {
-    const refreshToken = req.cookies.refreshToken;
+    const refreshToken = req.cookies?.refreshToken;
 
     if (!refreshToken) {
       return res.status(401).json({
