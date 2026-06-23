@@ -14,6 +14,8 @@ export const registerUser = async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
+    console.log("Sab chij mil gya hai:", username, email, password);
+
     if (!username || !email || !password) {
       return res.status(400).json({
         success: false,

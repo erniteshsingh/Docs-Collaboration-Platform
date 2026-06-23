@@ -7,7 +7,10 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: [
+      "http://localhost:5173",
+      "https://docs-collaboration-platform-gs7g-kvc7t71cb.vercel.app",
+    ],
     credentials: true,
   }),
 );
