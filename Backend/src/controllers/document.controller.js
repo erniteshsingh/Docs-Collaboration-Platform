@@ -32,6 +32,7 @@ export const createDocument = async (req, res) => {
 
 export const getAllDocuments = async (req, res) => {
   try {
+    console.log("Entred inside get all documents:!");
     const userId = req.user.userId || req.user.id || req.user._id;
 
     const page = parseInt(req.query.page) || 1;
