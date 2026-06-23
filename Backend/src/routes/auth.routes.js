@@ -1,7 +1,6 @@
 import express from "express";
 const router = express.Router();
 
-
 import {
   registerValidator,
   loginValidator,
@@ -16,7 +15,7 @@ import {
   refreshAccessToken,
 } from "../controllers/auth.controller.js";
 
-router.post("/register",validate, registerUser);
+router.post("/register", registerValidator, validate, registerUser);
 
 router.post("/login", loginValidator, validate, loginUser);
 
