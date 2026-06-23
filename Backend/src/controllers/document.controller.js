@@ -3,9 +3,9 @@ import mongoose from "mongoose";
 
 export const createDocument = async (req, res) => {
   try {
-    // if (!req.user) {
-    //   return res.status(401).json({ message: "Unauthorized" });
-    // }
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorizedakakakaka" });
+    }
 
     const title = req.body.title || "Untitled Document";
     const content = req.body.content || "";
