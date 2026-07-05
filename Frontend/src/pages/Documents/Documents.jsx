@@ -55,12 +55,10 @@ const Documents = () => {
 
   return (
     <div className="documents-page">
-      {/* Background decoration */}
       <div className="bg-orb orb-1" />
       <div className="bg-orb orb-2" />
 
       <div className="documents-container">
-        {/* Header */}
         <header className="documents-header">
           <div className="header-left">
             <div className="header-eyebrow">
@@ -96,7 +94,6 @@ const Documents = () => {
           </button>
         </header>
 
-        {/* Grid */}
         <div className="documents-grid">
           {documents.length === 0 ? (
             <div className="no-docs">
@@ -141,7 +138,6 @@ const Documents = () => {
 
               return (
                 <div className="document-card" key={doc._id}>
-                  {/* Card accent bar */}
                   <div className={`card-accent-bar accent-${role}`} />
 
                   <div className="card-body-section">
@@ -189,9 +185,7 @@ const Documents = () => {
                     <div className="action-buttons">
                       <button
                         className={`btn ${role === "viewer" ? "btn-view" : "btn-edit"}`}
-                        onClick={() =>
-                          navigate(`/documents/${doc._id}`, { state: { role } })
-                        }
+                        onClick={() => navigate(`/documents/${doc._id}`)}
                       >
                         {role === "viewer" ? (
                           <>
