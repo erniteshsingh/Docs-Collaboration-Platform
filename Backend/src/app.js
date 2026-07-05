@@ -7,11 +7,12 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://docs-collaboration-platform-git-624ed0-erniteshsinghs-projects.vercel.app",
+      "https://docs-collaboration-platform-gs7g.vercel.app",
     ],
     credentials: true,
   }),
 );
+
 app.use(express.json());
 app.use(cookieParser());
 
