@@ -3,19 +3,17 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 const app = express();
 
-app.use(cookieParser());
-
 app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://docs-collaboration-platform-gs7g-kvc7t71cb.vercel.app",
+      "https://docs-collaboration-platform-git-624ed0-erniteshsinghs-projects.vercel.app",
     ],
     credentials: true,
   }),
 );
-
 app.use(express.json());
+app.use(cookieParser());
 
 import authRoutes from "./routes/auth.routes.js";
 app.use("/api/v1/auth", authRoutes);

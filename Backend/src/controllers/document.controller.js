@@ -32,7 +32,15 @@ export const createDocument = async (req, res) => {
 
 export const getAllDocuments = async (req, res) => {
   try {
-    console.log("Entred inside get all documents:!");
+    console.log("Entered inside getAllDocuments");
+
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+
     const userId = req.user.userId || req.user.id || req.user._id;
 
     const page = parseInt(req.query.page) || 1;
@@ -63,9 +71,12 @@ export const getAllDocuments = async (req, res) => {
       documents,
     });
   } catch (error) {
+    console.error("getAllDocuments error:", error);
+
     return res.status(500).json({
       success: false,
       message: "Server Error",
+      error: error.message,
     });
   }
 };

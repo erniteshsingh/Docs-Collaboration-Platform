@@ -13,7 +13,7 @@ import {
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 import { checkDocumentPermission } from "../middlewares/checkDocumentationPermission.js";
 
-router.post("/",authMiddleware,createDocument);
+router.post("/", authMiddleware, createDocument);
 
 router.get("/", authMiddleware, getAllDocuments);
 
